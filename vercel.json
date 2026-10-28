@@ -1,0 +1,11 @@
+{
+  "buildCommand": "npm install && npm run build:client",
+  "outputDirectory": "dist/client",
+  "framework": null,
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://4mahv57a2u7d3.doubao.link/app/app_17gd72mxg21/api/:path*" },
+    { "source": "/runtime/:path*", "destination": "https://4mahv57a2u7d3.doubao.link/app/app_17gd72mxg21/runtime/:path*" },
+    { "source": "/aily/:path*", "destination": "https://4mahv57a2u7d3.doubao.link/app/app_17gd72mxg21/aily/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
