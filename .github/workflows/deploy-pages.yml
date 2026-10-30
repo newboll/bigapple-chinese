@@ -32,36 +32,25 @@ jobs:
       - name: Flatten output for Pages
         run: |
           mv dist-pages/client/index.html dist-pages/index.html
-          cp dist-pages/index.html dist-pages/404.html
       - name: Inject server-side template variables
         run: |
-          f=dist-pages/index.html
-          # Replace server-rendered template placeholders with static-safe values
-          sed -i 's|{{appId}}|"static"|g' "$f"
-          sed -i 's|{{userId}}|null|g' "$f"
-          sed -i 's|{{tenantId}}|"static"|g' "$f"
-          sed -i 's|{{userName}}|"Guest"|g' "$f"
-          sed -i 's|{{csrfToken}}|""|g' "$f"
-          sed -i 's|{{environment}}|"production"|g' "$f"
-          sed -i 's|{{basename}}|"/bigapple-chinese/"|g' "$f"
-          sed -i 's|{{appName}}|Big Apple Chinese|g' "$f"
-          sed -i 's|{{{appAvatar}}}||g' "$f"
-          sed -i 's|{{appDescription}}|Big Apple Chinese e-picturebook shop|g' "$f"
-          sed -i "s|'{{{__platform__}}}'|'{}'|g" "$f"
-          # also patch 404.html identically
-          sed -i 's|{{appId}}|"static"|g' dist-pages/404.html
-          sed -i 's|{{userId}}|null|g' dist-pages/404.html
-          sed -i 's|{{tenantId}}|"static"|g' dist-pages/404.html
-          sed -i 's|{{userName}}|"Guest"|g' dist-pages/404.html
-          sed -i 's|{{csrfToken}}|""|g' dist-pages/404.html
-          sed -i 's|{{environment}}|"production"|g' dist-pages/404.html
-          sed -i 's|{{basename}}|"/bigapple-chinese/"|g' dist-pages/404.html
-          sed -i 's|{{appName}}|Big Apple Chinese|g' dist-pages/404.html
-          sed -i 's|{{{appAvatar}}}||g' dist-pages/404.html
-          sed -i 's|{{appDescription}}|Big Apple Chinese e-picturebook shop|g' dist-pages/404.html
-          sed -i "s|'{{{__platform__}}}'|'{}'|g" dist-pages/404.html
-          echo "=== remaining placeholders (should be empty) ==="
-          grep -oE '\{\{[^}]+\}\}' "$f" || echo "(none)"
+          for f in dist-pages/index.html dist-pages/404.html; do
+            # Original template: window.appId = "{{appId}}";  -> replace token only, keep surrounding quotes
+            sed -i 's|{{appId}}|static|g' "$f"
+            sed -i 's|{{userId}}|null|g' "$f"
+            sed -i 's|{{tenantId}}|static|g' "$f"
+            sed -i 's|{{userName}}|Guest|g' "$f"
+            sed -i 's|{{csrfToken}}||g' "$f"
+            sed -i 's|{{environment}}|production|g' "$f"
+            sed -i 's|{{basename}}|/bigapple-chinese/|g' "$f"
+            sed -i 's|{{appName}}|Big Apple Chinese|g' "$f"
+            sed -i 's|{{{appAvatar}}}||g' "$f"
+            sed -i 's|{{appDescription}}|Big Apple Chinese e-picturebook shop|g' "$f"
+            sed -i "s|{{{__platform__}}}|{}|g" "$f"
+          done
+          cp dist-pages/index.html dist-pages/404.html
+          echo "=== remaining {{ placeholders ==="
+          grep -oE '\{\{[^}]*\}\}' dist-pages/index.html || echo "(none)"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist-pages
