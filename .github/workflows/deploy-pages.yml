@@ -29,8 +29,12 @@ jobs:
         env:
           CLIENT_BASE_PATH: /bigapple-chinese/
         run: npx vite build --config vite.config.ts --base=/bigapple-chinese/ --outDir dist-pages
-      - name: Add SPA fallback
-        run: cp dist-pages/index.html dist-pages/404.html
+      - name: Flatten output for Pages
+        run: |
+          # vite preset outputs HTML under dist-pages/client/; move it to root
+          mv dist-pages/client/index.html dist-pages/index.html
+          cp dist-pages/index.html dist-pages/404.html
+          ls -la dist-pages/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist-pages
