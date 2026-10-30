@@ -29,28 +29,24 @@ jobs:
         env:
           CLIENT_BASE_PATH: /bigapple-chinese/
         run: npx vite build --config vite.config.ts --base=/bigapple-chinese/ --outDir dist-pages
-      - name: Flatten output for Pages
+      - name: Flatten and inject template vars
         run: |
           mv dist-pages/client/index.html dist-pages/index.html
-      - name: Inject server-side template variables
-        run: |
-          for f in dist-pages/index.html dist-pages/404.html; do
-            # Original template: window.appId = "{{appId}}";  -> replace token only, keep surrounding quotes
-            sed -i 's|{{appId}}|static|g' "$f"
-            sed -i 's|{{userId}}|null|g' "$f"
-            sed -i 's|{{tenantId}}|static|g' "$f"
-            sed -i 's|{{userName}}|Guest|g' "$f"
-            sed -i 's|{{csrfToken}}||g' "$f"
-            sed -i 's|{{environment}}|production|g' "$f"
-            sed -i 's|{{basename}}|/bigapple-chinese/|g' "$f"
-            sed -i 's|{{appName}}|Big Apple Chinese|g' "$f"
-            sed -i 's|{{{appAvatar}}}||g' "$f"
-            sed -i 's|{{appDescription}}|Big Apple Chinese e-picturebook shop|g' "$f"
-            sed -i "s|{{{__platform__}}}|{}|g" "$f"
-          done
-          cp dist-pages/index.html dist-pages/404.html
-          echo "=== remaining {{ placeholders ==="
-          grep -oE '\{\{[^}]*\}\}' dist-pages/index.html || echo "(none)"
+          f=dist-pages/index.html
+          sed -i 's|{{appId}}|static|g' "$f"
+          sed -i 's|{{userId}}|null|g' "$f"
+          sed -i 's|{{tenantId}}|static|g' "$f"
+          sed -i 's|{{userName}}|Guest|g' "$f"
+          sed -i 's|{{csrfToken}}||g' "$f"
+          sed -i 's|{{environment}}|production|g' "$f"
+          sed -i 's|{{basename}}|/bigapple-chinese/|g' "$f"
+          sed -i 's|{{appName}}|Big Apple Chinese|g' "$f"
+          sed -i 's|{{{appAvatar}}}||g' "$f"
+          sed -i 's|{{appDescription}}|Big Apple Chinese e-picturebook shop|g' "$f"
+          sed -i "s|{{{__platform__}}}|{}|g" "$f"
+          cp "$f" dist-pages/404.html
+          echo "=== remaining placeholders ==="
+          grep -oE '{{[^}]*}}' "$f" || echo "(none)"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist-pages
